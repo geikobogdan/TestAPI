@@ -1,6 +1,7 @@
 const express = require("express");
 const personController = require("../controllers/person");
 const orderController = require("../controllers/order");
+const authController = require("../controllers/auth");
 const menuController = require("../controllers/menu");
 const createPersonDto = require("../dto/create-person.dto");
 const editPersonDto = require("../dto/edit-person.dto");
@@ -9,6 +10,8 @@ const createOrderDto = require("../dto/create-order.dto");
 const editOrderDto = require("../dto/edit-order.dto");
 const editMenuItemDto = require("../dto/edit-menu-item.dto");
 const createMenuItemDto = require("../dto/create-menu-item.dto");
+const loginPayloadDto = require("../dto/login-dto");
+const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -18,6 +21,21 @@ const router = express.Router();
  * @property {string} email - email
  * @property {string} firstName - first name
  * @property {string} lastName - last name
+ */
+
+/**
+ * @typedef {object} LoginData
+ * @property {string} email.required - email
+ * @property {string} password.required - password
+ */
+
+/**
+ * @typedef {object} LoginResponse
+ * @property {number} id - The auto-generated id of the person
+ * @property {string} email - email
+ * @property {string} firstName - first name
+ * @property {string} lastName - last name
+ * @property {string} token - token
  */
 
 /**
@@ -72,6 +90,26 @@ const router = express.Router();
  * @property {number} count - count of items
  * @property {array<MenuItem>} menuItems - menuItems array
  */
+
+/**
+ * POST /login
+ * @summary log in
+ * @tags Auth
+ * @param {LoginData} request.body.required - login payload
+ * @return {LoginResponse} 200 - login response - application/json
+ */
+router.post("/login", loginPayloadDto, validateRequest, authController.login);
+
+/**
+ * GET /testAuth
+ * @summary test auth
+ * @tags Auth
+ * @return {string} 200 - application/json
+ * @security BearerAuth
+ */
+router.get("/testAuth", authMiddleware, (req, res) => {
+  res.status(200).json({ message: "you are authorized" });
+});
 
 /**
  * GET /person/{id}

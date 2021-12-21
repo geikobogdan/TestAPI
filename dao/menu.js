@@ -1,17 +1,13 @@
 const db = require("../db/db");
 
 class MenuDAO {
-  async getAll() {
-    const items = await db.select("*").from("menu").where({});
-    const [{ count }] = await db("menu").count({ count: "*" });
-    return { count, items };
+  getAll() {
+    db("menu")
+      .select("id", "name", "ingredients")
+      .then((items) => ({ count: items.length, items }));
   }
-  async getByName(name) {
-    const [item] = name
-      ? await db.select("*").from("menu").where({ name })
-      : [{}];
-
-    return item;
+  getByName(name) {
+    return db.table("menu").first("id", "name", "ingredients").where({ name });
   }
 
   async create(name, ingredients) {
@@ -21,7 +17,7 @@ class MenuDAO {
           name,
           ingredients,
         })
-        .returning("*");
+        .returning(["id", "name", "ingredients"]);
       return item;
     } catch (error) {
       const errors = [];
@@ -36,15 +32,18 @@ class MenuDAO {
   }
   async edit(id, name, ingredients) {
     try {
-      let [item] = await db("menu").where({ id });
+      let item = await db
+        .table("menu")
+        .first("id", "name", "ingredients")
+        .where({ id });
       if (item) {
-        await db("menu")
+        [item] = await db("menu")
           .where({ id })
           .update({
             name: name || item.name,
             ingredients: ingredients || item.ingredients,
-          });
-        [item] = await db("menu").where({ id });
+          })
+          .returning(["id", "name", "ingredients"]);
       }
       return item;
     } catch (error) {
@@ -58,8 +57,8 @@ class MenuDAO {
       }
     }
   }
-  async delete(id) {
-    await db("menu").where({ id }).del();
+  delete(id) {
+    return db("menu").where({ id }).del();
   }
 }
 

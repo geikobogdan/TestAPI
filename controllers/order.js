@@ -1,51 +1,56 @@
 const orderService = require("../services/order");
 
 class OrderController {
-  async getAll(req, res) {
-    const orders = await orderService.getAll();
-    res.status(200).json(orders);
+  getAll(req, res) {
+    orderService.getAll().then((orders) => res.status(200).json(orders));
   }
-  async getByName(req, res) {
+  getByName(req, res) {
     const { name: orderName } = req.query;
-    const order = await orderService.getByName(orderName);
-    res.status(200).json(order);
+
+    orderService.getByName(orderName).then((order) => {
+      return order?.id ? res.status(200).json(order) : res.status(404).send();
+    });
   }
-  async getByCustomer(req, res) {
-    const customerId = req.params.customerId;
-    const orders = await orderService.getByCustomer(customerId);
-    res.status(200).json(orders);
+  getByCustomer(req, res) {
+    const customerId = +req.params.customerId;
+    orderService
+      .getByCustomer(customerId)
+      .then((orders) => res.status(200).json(orders));
   }
   async createOrder(req, res) {
     try {
       const order = await orderService.createOrder(req.body);
       res.status(201).json(order);
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
+    } catch (e) {
+      if (e?.errors && e.errors[0]?.param === "name") {
+        return res.status(409).send(e);
+      }
+      const errorMessage = "An error occurred";
+      res.status(500).send({ errorMessage });
     }
   }
-  async editOrder(req, res) {
-    try {
-      const orderId = +req.params.id;
-      const order = await orderService.editOrder(
-        orderId,
-        req.body.order_ids_list
-      );
-      res.status(200).json(order);
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
-    }
+  editOrder(req, res) {
+    const orderId = +req.params.id;
+    orderService
+      .editOrder(orderId, req.body.order_ids_list)
+      .then((order) => res.status(200).json(order))
+      .catch((e) => {
+        if (e?.errors && e.errors[0]?.param === "name") {
+          return res.status(409).send(e);
+        }
+        const errorMessage = "An error occurred";
+        res.status(500).send({ errorMessage });
+      });
   }
-  async delete(req, res) {
-    try {
-      const orderId = +req.params.id;
-      await orderService.delete(orderId);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
-    }
+  delete(req, res) {
+    const orderId = +req.params.id;
+    orderService
+      .delete(orderId)
+      .then(() => res.status(200).json({ success: true }))
+      .catch((e) => {
+        const errorMessage = "An error occurred";
+        res.status(500).send({ errorMessage });
+      });
   }
 }
 

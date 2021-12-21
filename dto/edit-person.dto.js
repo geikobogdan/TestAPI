@@ -5,6 +5,10 @@ const editPersonDto = [
     .optional()
     .isEmail()
     .withMessage("email must contain a valid email address"),
+  body("password")
+    .optional()
+    .isLength({ min: 8 })
+    .withMessage("password must be at least 8 chars long"),
 ];
 
 module.exports = editPersonDto;

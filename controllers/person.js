@@ -1,43 +1,51 @@
 const personService = require("../services/person");
 
 class PersonController {
-  async getAll(req, res) {
-    const persons = await personService.getAll();
-    res.status(200).json(persons);
+  getAll(req, res) {
+    personService.getAll().then((persons) => res.status(200).json(persons));
   }
-  async getById(req, res) {
+  getById(req, res) {
     const personId = +req.params.id;
-    const person = await personService.getById(personId);
-    res.status(200).json(person);
+    personService
+      .getById(personId)
+      .then((person) =>
+        person?.id ? res.status(200).json(person) : res.status(404).send()
+      );
   }
-  async createPerson(req, res) {
-    try {
-      const person = await personService.createPerson(req.body);
-      res.status(201).json(person);
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
-    }
+  createPerson(req, res) {
+    personService
+      .createPerson(req.body)
+      .then((person) => res.status(201).json(person))
+      .catch((e) => {
+        if (e?.errors && e.errors[0]?.param === "email") {
+          return res.status(409).send(e);
+        }
+        const errorMessage = "An error occurred";
+        res.status(500).send({ errorMessage });
+      });
   }
-  async editPerson(req, res) {
-    try {
-      const personId = +req.params.id;
-      const person = await personService.editPerson(personId, req.body);
-      res.status(200).json(person);
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
-    }
+  editPerson(req, res) {
+    const personId = +req.params.id;
+    personService
+      .editPerson(personId, req.body)
+      .then((person) => res.status(200).json(person))
+      .catch((e) => {
+        if (e?.errors && e.errors[0]?.param === "email") {
+          return res.status(409).send(e);
+        }
+        const errorMessage = "An error occurred";
+        res.status(500).send({ errorMessage });
+      });
   }
-  async delete(req, res) {
-    try {
-      const personId = +req.params.id;
-      await personService.deletePerson(personId);
-      res.status(200).json({ success: true });
-    } catch (error) {
-      console.error("error: ", error);
-      res.status(500).send(error);
-    }
+  delete(req, res) {
+    const personId = +req.params.id;
+    personService
+      .deletePerson(personId)
+      .then(() => res.status(200).json({ success: true }))
+      .catch((e) => {
+        const errorMessage = "An error occurred";
+        res.status(500).send({ errorMessage });
+      });
   }
 }
 

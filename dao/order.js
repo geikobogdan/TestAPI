@@ -1,34 +1,41 @@
 const db = require("../db/db");
 
 class OrderDAO {
-  async getAll() {
-    const orders = await db.select("*").from("order").where({});
-    const [{ count }] = await db("order").count({ count: "*" });
-    return { count, orders };
+  getAll() {
+    return db("order")
+      .select("id", "name", "order_ids_list", "customer")
+      .then((orders) => ({ count: orders.length, orders }));
   }
   async getOrderItems(orderId) {
-    const [res] = await db
-      .select("order_ids_list")
-      .from("order")
+    const res = await db
+      .table("order")
+      .first("order_ids_list")
       .where({ id: orderId });
+
     if (res?.order_ids_list) {
-      const items = await db
-        .select("*")
-        .from("menu")
-        .whereIn("id", order_ids_list);
+      const items = await db("menu")
+        .select("id", "name", "ingredients")
+        .whereIn("id", res.order_ids_list);
       return items;
     }
     return [];
   }
   async getByName(name) {
-    const [order] = name
+    const order = name
       ? await db
-          .select("*")
-          .from("order")
-          .leftJoin("person", "person.id", "order.customer")
+          .table("order as o")
+          .first(
+            "o.id",
+            "o.name",
+            "o.order_ids_list",
+            "o.customer",
+            "p.first_name",
+            "p.last_name",
+            "p.email"
+          )
+          .leftJoin("person as p", "p.id", "o.customer")
           .where({ name })
-      : [{}];
-
+      : {};
     if (order && Object.keys(order)?.length) {
       //?
       order.person = {
@@ -37,30 +44,25 @@ class OrderDAO {
         last_name: order.last_name,
         email: order.email,
       };
+
       order.orderItems = await this.getOrderItems(order.id);
       delete order.first_name;
       delete order.last_name;
       delete order.email;
     }
-
     return order;
   }
-  async getByCustomer(id) {
-    const orders = await db.select("*").from("order").where({ customer: id });
-    const [{ count }] = await db("order")
-      .count("customer")
-      .where({ customer: id });
-    return { count, orders };
+  getByCustomer(id) {
+    return db("order")
+      .select("id", "name", "order_ids_list")
+      .where({ customer: id })
+      .then((orders) => ({ count: orders.length, orders }));
   }
   async createOrder(customer, name, order_ids_list) {
     try {
       const [order] = await db("order")
-        .insert({
-          name,
-          customer,
-          order_ids_list,
-        })
-        .returning("*");
+        .insert({ name, customer, order_ids_list })
+        .returning(["id", "name", "customer", "order_ids_list"]);
       return order;
     } catch (error) {
       const errors = [];
@@ -81,8 +83,8 @@ class OrderDAO {
     }
     return order;
   }
-  async deleteOrder(id) {
-    await db("order").where({ id }).del();
+  deleteOrder(id) {
+    return db("order").where({ id }).del();
   }
 }
 

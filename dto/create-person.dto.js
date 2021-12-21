@@ -7,6 +7,10 @@ const createPersonDto = [
   body("firstName").notEmpty().withMessage("first name must not be empty"),
 
   body("lastName").notEmpty().withMessage("last name must not be empty"),
+
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("password must be at least 8 chars long"),
 ];
 
 module.exports = createPersonDto;

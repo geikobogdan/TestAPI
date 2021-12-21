@@ -8,12 +8,12 @@ class PersonService {
     return personDAO.getById(id);
   }
   createPerson(personDto) {
-    const { firstName, lastName, email } = personDto;
-    return personDAO.createPerson(firstName, lastName, email);
+    const { firstName, lastName, email, password } = personDto;
+    return personDAO.createPerson(firstName, lastName, email, password);
   }
   editPerson(id, personDto) {
-    const { firstName, lastName, email } = personDto;
-    return personDAO.editPerson(id, firstName, lastName, email);
+    const { firstName, lastName, email, password } = personDto;
+    return personDAO.editPerson(id, firstName, lastName, email, password);
   }
   deletePerson(id) {
     return personDAO.deletePerson(id);
