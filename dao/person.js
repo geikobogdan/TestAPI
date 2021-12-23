@@ -4,22 +4,22 @@ const db = require("../db/db");
 class PersonDAO {
   getAll() {
     return db("person")
-      .select("id", "first_name", "last_name", "email")
+      .select("id", "role", "first_name", "last_name", "email")
       .then((persons) => ({ count: persons.length, persons }));
   }
   getById(id) {
     return db
       .table("person")
-      .first("id", "first_name", "last_name", "email")
+      .first("id", "role", "first_name", "last_name", "email")
       .where({ id });
   }
   getByEmail(email) {
     return db
       .table("person")
-      .first("id", "first_name", "last_name", "email", "password")
+      .first("id", "role", "first_name", "last_name", "email", "password")
       .where({ email });
   }
-  async createPerson(firstName, lastName, email, password) {
+  async createPerson(firstName, lastName, email, password, role) {
     try {
       const hashedPassword = await hash(password, 10);
       const [id] = await db("person")
@@ -28,9 +28,10 @@ class PersonDAO {
           first_name: firstName,
           last_name: lastName,
           password: hashedPassword,
+          role,
         })
         .returning("id");
-      return { id, email, firstName, lastName };
+      return { id, role, email, firstName, lastName };
     } catch (error) {
       const errors = [];
       if (error.detail.includes("Key (email)")) {
@@ -42,12 +43,12 @@ class PersonDAO {
       }
     }
   }
-  async editPerson(id, firstName, lastName, email, password) {
+  async editPerson(id, firstName, lastName, email, password, role) {
     try {
       const hashedPassword = password ? await hash(password, 10) : "";
       let person = await db
         .table("person")
-        .first("id", "first_name", "last_name", "email")
+        .first("id", "role", "first_name", "last_name", "email")
         .where({ id });
       if (person) {
         [person] = await db("person")
@@ -57,8 +58,9 @@ class PersonDAO {
             first_name: firstName ? firstName : person.firstName,
             last_name: lastName ? lastName : person.lastName,
             password: hashedPassword || person.password,
+            role: role || person.role,
           })
-          .returning(["id", "first_name", "last_name", "email"]);
+          .returning(["id", "role", "first_name", "last_name", "email"]);
       }
       return person;
     } catch (error) {

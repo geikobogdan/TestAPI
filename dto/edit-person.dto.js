@@ -9,6 +9,8 @@ const editPersonDto = [
     .optional()
     .isLength({ min: 8 })
     .withMessage("password must be at least 8 chars long"),
+
+  body("role").optional().isIn(["admin", "user"]).withMessage("incorrect role"),
 ];
 
 module.exports = editPersonDto;

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = require("./routes");
 const expressJSDocSwagger = require("express-jsdoc-swagger");
+const requestDuration = require("./middleware/request-duration");
+const authMiddleware = require("./middleware/auth");
 
 const app = express();
 
@@ -24,6 +26,10 @@ const swaggerOptions = {
 };
 
 app.use(express.json());
+
+app.use(authMiddleware)
+
+app.use(requestDuration);
 
 expressJSDocSwagger(app)(swaggerOptions);
 

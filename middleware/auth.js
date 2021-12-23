@@ -2,7 +2,13 @@ const { verify } = require("jsonwebtoken");
 const personService = require("../services/person");
 const { JWT_SECRET } = require("../config");
 
+const adminMethods = new Set(["POST", "PATCH", "DELETE"]);
+
 const authMiddleware = (req, res, next) => {
+  if (req.method === "GET" || req.originalUrl === "/login") {
+    return next();
+  }
+
   const errors = [];
 
   if (!req.headers.authorization) {
@@ -29,6 +35,13 @@ const authMiddleware = (req, res, next) => {
     .then((person) => {
       if (person?.id) {
         req.user = person;
+        if (person.role === "user" && adminMethods.has(req.method)) {
+          errors.push({
+            msg: "Permission denied",
+            param: "auth",
+          });
+          return res.status(403).json(errors);
+        }
         return next();
       }
       errors.push({

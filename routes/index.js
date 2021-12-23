@@ -11,13 +11,13 @@ const editOrderDto = require("../dto/edit-order.dto");
 const editMenuItemDto = require("../dto/edit-menu-item.dto");
 const createMenuItemDto = require("../dto/create-menu-item.dto");
 const loginPayloadDto = require("../dto/login-dto");
-const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
 /**
  * @typedef {object} Person
  * @property {number} id - The auto-generated id of the person
+ * @property {string} role - role
  * @property {string} email - email
  * @property {string} firstName - first name
  * @property {string} lastName - last name
@@ -32,6 +32,7 @@ const router = express.Router();
 /**
  * @typedef {object} LoginResponse
  * @property {number} id - The auto-generated id of the person
+ * @property {string} role - role
  * @property {string} email - email
  * @property {string} firstName - first name
  * @property {string} lastName - last name
@@ -41,8 +42,10 @@ const router = express.Router();
 /**
  * @typedef {object} PersonData
  * @property {string} email.required - email
+ * @property {string} role.required - role "admin" || "user"
  * @property {string} firstName.required - first name
  * @property {string} lastName.required - last name
+ * @property {string} password.required - password
  */
 
 /**
@@ -101,17 +104,6 @@ const router = express.Router();
 router.post("/login", loginPayloadDto, validateRequest, authController.login);
 
 /**
- * GET /testAuth
- * @summary test auth
- * @tags Auth
- * @return {string} 200 - application/json
- * @security BearerAuth
- */
-router.get("/testAuth", authMiddleware, (req, res) => {
-  res.status(200).json({ message: "you are authorized" });
-});
-
-/**
  * GET /person/{id}
  * @summary Get person by id
  * @tags Person
@@ -134,6 +126,7 @@ router.get("/person", personController.getAll);
  * @tags Person
  * @param {PersonData} request.body.required - Person data
  * @return {Person} 201 - person object
+ * @security BearerAuth
  */
 router.post(
   "/person",
@@ -149,6 +142,7 @@ router.post(
  * @param {number} id.path.required - Numeric ID of the person
  * @param {PersonData} request.body - person data
  * @return {Person} 200 - updated person object - application/json
+ * @security BearerAuth
  */
 router.patch(
   "/person/:id",
@@ -163,6 +157,7 @@ router.patch(
  * @tags Person
  * @param {number} id.path.required - Numeric ID of the person
  * @return {object} 200 - message - application/json
+ * @security BearerAuth
  */
 router.delete("/person/:id", personController.delete);
 
@@ -200,6 +195,7 @@ router.get("/orders", orderController.getAll);
  * @tags Order
  * @param {OrderData} request.body.required - Order data
  * @return {Order} 201 - order object
+ * @security BearerAuth
  */
 router.post(
   "/order",
@@ -215,6 +211,7 @@ router.post(
  * @param {number} id.path.required - Numeric ID of the person
  * @param {PersonData} request.body - person data
  * @return {Person} 200 - updated person object - application/json
+ * @security BearerAuth
  */
 router.patch(
   "/order/:id",
@@ -229,6 +226,7 @@ router.patch(
  * @tags Order
  * @param {number} id.path.required - Numeric ID of the order
  * @return {object} 200 - message - application/json
+ * @security BearerAuth
  */
 router.delete("/order/:id", orderController.delete);
 
@@ -257,6 +255,7 @@ router.get("/menuItems", menuController.getAll);
  * @tags Menu
  * @param {MenuItemData} request.body.required - item data
  * @return {MenuItem} 201 - item object
+ * @security BearerAuth
  */
 router.post(
   "/menuItem",
@@ -272,6 +271,7 @@ router.post(
  * @param {number} id.path.required - Numeric ID of the item
  * @param {MenuItemData} request.body - item data
  * @return {MenuItem} 200 - updated item object - application/json
+ * @security BearerAuth
  */
 router.patch(
   "/menuItem/:id",
@@ -286,6 +286,7 @@ router.patch(
  * @tags Menu
  * @param {number} id.path.required - Numeric ID of the item
  * @return {object} 200 - message - application/json
+ * @security BearerAuth
  */
 router.delete("/menuItem/:id", menuController.delete);
 
