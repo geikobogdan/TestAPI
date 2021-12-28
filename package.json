@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "DEBUG=knex*  nodemon index.js",
-    "migrate": "npx knex migrate:latest --knexfile db/knexfile.js"
+    "migrate": "npx knex migrate:latest --knexfile db/knexfile.js",
+    "seed": "npx knex seed:run --knexfile db/knexfile.js",
+    "lint": "eslint ./ --fix"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,7 @@
     "swagger-jsdoc": "^6.1.0"
   },
   "devDependencies": {
+    "eslint": "^8.5.0",
     "nodemon": "^2.0.15"
   }
 }

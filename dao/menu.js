@@ -2,7 +2,7 @@ const db = require("../db/db");
 
 class MenuDAO {
   getAll() {
-    db("menu")
+   return  db("menu")
       .select("id", "name", "ingredients")
       .then((items) => ({ count: items.length, items }));
   }

@@ -1,3 +1,4 @@
+const ApiError = require("../middleware/error/api_error");
 const personService = require("../services/person");
 
 class PersonController {
@@ -8,44 +9,27 @@ class PersonController {
     const personId = +req.params.id;
     personService
       .getById(personId)
-      .then((person) =>
-        person?.id ? res.status(200).json(person) : res.status(404).send()
-      );
+      .then((person) => res.status(200).json(person));
   }
-  createPerson(req, res) {
+  createPerson(req, res, next) {
     personService
       .createPerson(req.body)
       .then((person) => res.status(201).json(person))
-      .catch((e) => {
-        if (e?.errors && e.errors[0]?.param === "email") {
-          return res.status(409).send(e);
-        }
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
-  editPerson(req, res) {
+  editPerson(req, res, next) {
     const personId = +req.params.id;
     personService
       .editPerson(personId, req.body)
       .then((person) => res.status(200).json(person))
-      .catch((e) => {
-        if (e?.errors && e.errors[0]?.param === "email") {
-          return res.status(409).send(e);
-        }
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
-  delete(req, res) {
+  delete(req, res, next) {
     const personId = +req.params.id;
     personService
       .deletePerson(personId)
       .then(() => res.status(200).json({ success: true }))
-      .catch((e) => {
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
 }
 

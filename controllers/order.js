@@ -1,3 +1,4 @@
+const ApiError = require("../middleware/error/api_error");
 const orderService = require("../services/order");
 
 class OrderController {
@@ -8,7 +9,7 @@ class OrderController {
     const { name: orderName } = req.query;
 
     orderService.getByName(orderName).then((order) => {
-      return order?.id ? res.status(200).json(order) : res.status(404).send();
+      return res.status(200).json(order);
     });
   }
   getByCustomer(req, res) {
@@ -17,40 +18,27 @@ class OrderController {
       .getByCustomer(customerId)
       .then((orders) => res.status(200).json(orders));
   }
-  async createOrder(req, res) {
+  async createOrder(req, res, next) {
     try {
       const order = await orderService.createOrder(req.body);
       res.status(201).json(order);
     } catch (e) {
-      if (e?.errors && e.errors[0]?.param === "name") {
-        return res.status(409).send(e);
-      }
-      const errorMessage = "An error occurred";
-      res.status(500).send({ errorMessage });
+      next(ApiError.internal(e));
     }
   }
-  editOrder(req, res) {
+  editOrder(req, res, next) {
     const orderId = +req.params.id;
     orderService
       .editOrder(orderId, req.body.order_ids_list)
       .then((order) => res.status(200).json(order))
-      .catch((e) => {
-        if (e?.errors && e.errors[0]?.param === "name") {
-          return res.status(409).send(e);
-        }
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
-  delete(req, res) {
+  delete(req, res, next) {
     const orderId = +req.params.id;
     orderService
       .delete(orderId)
       .then(() => res.status(200).json({ success: true }))
-      .catch((e) => {
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
 }
 

@@ -1,3 +1,4 @@
+const ApiError = require("../middleware/error/api_error");
 const menuService = require("../services/menu");
 
 class MenuController {
@@ -6,46 +7,27 @@ class MenuController {
   }
   getByName(req, res) {
     const { name: itemName } = req.query;
-    menuService
-      .getByName(itemName)
-      .then((item) =>
-        item?.id ? res.status(200).json(item) : res.status(404).send()
-      );
+    menuService.getByName(itemName).then((item) => res.status(200).json(item));
   }
-  createItem(req, res) {
+  createItem(req, res, next) {
     menuService
       .createItem(req.body)
       .then((item) => res.status(201).json(item))
-      .catch((e) => {
-        if (e?.errors && e.errors[0]?.param === "name") {
-          return res.status(409).send(e);
-        }
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
-  editItem(req, res) {
+  editItem(req, res, next) {
     const itemId = +req.params.id;
     menuService
       .editItem(itemId, req.body)
       .then((item) => res.status(200).json(item))
-      .catch((e) => {
-        if (e?.errors && e.errors[0]?.param === "name") {
-          return res.status(409).send(e);
-        }
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
-  delete(req, res) {
+  delete(req, res, next) {
     const itemId = +req.params.id;
     menuService
       .delete(itemId)
       .then(() => res.status(200).json({ success: true }))
-      .catch((e) => {
-        const errorMessage = "An error occurred";
-        res.status(500).send({ errorMessage });
-      });
+      .catch((e) => next(ApiError.internal(e)));
   }
 }
 

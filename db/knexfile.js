@@ -1,10 +1,12 @@
+const { CLIENT, DB_MANE, USER, PASSWORD } = require("../config");
+
 module.exports = {
   development: {
-    client: "postgresql",
+    client: CLIENT,
     connection: {
-      database: "knex_tutorial",
-      user: "bheiko.appwell",
-      password: "1234",
+      database: DB_MANE,
+      user: USER,
+      password: PASSWORD,
     },
     pool: {
       min: 2,
@@ -12,6 +14,9 @@ module.exports = {
     },
     migrations: {
       tableName: "knex_migrations",
+    },
+    seeds: {
+      directory: "./seeds",
     },
   },
 };

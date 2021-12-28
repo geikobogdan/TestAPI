@@ -206,11 +206,11 @@ router.post(
 
 /**
  * PATCH /order/{id}
- * @summary Update person by id
- * @tags Person
- * @param {number} id.path.required - Numeric ID of the person
- * @param {PersonData} request.body - person data
- * @return {Person} 200 - updated person object - application/json
+ * @summary Update order by id
+ * @tags Order
+ * @param {number} id.path.required - Numeric ID of the order
+ * @param {OrderData} request.body - order data
+ * @return {Order} 200 - updated order object - application/json
  * @security BearerAuth
  */
 router.patch(

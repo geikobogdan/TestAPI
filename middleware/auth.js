@@ -50,7 +50,7 @@ const authMiddleware = (req, res, next) => {
       });
       return res.status(401).json(errors);
     })
-    .catch((e) => {
+    .catch(() => {
       const errorMessage = "An error occurred";
       return res.status(500).send({ errorMessage });
     });
