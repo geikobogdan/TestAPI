@@ -1,11 +1,11 @@
-const express = require("express");
-const router = require("./routes");
-const expressJSDocSwagger = require("express-jsdoc-swagger");
-const requestDuration = require("./middleware/request-duration");
-const authMiddleware = require("./middleware/auth");
-const { swaggerOptions } = require("./swagger_config");
-const { DEV_PORT } = require("./config");
-const apiErrorHandler = require("./middleware/error/api_error_handler");
+const express = require('express');
+const expressJSDocSwagger = require('express-jsdoc-swagger');
+const router = require('./routes');
+const requestDuration = require('./middleware/request-duration');
+const authMiddleware = require('./middleware/auth');
+const { swaggerOptions } = require('./swagger_config');
+const { DEV_PORT } = require('./config');
+const apiErrorHandler = require('./middleware/error/api_error_handler');
 
 const app = express();
 

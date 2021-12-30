@@ -1,18 +1,18 @@
 module.exports.swaggerOptions = {
   info: {
-    title: "API",
-    version: "1.0.0",
+    title: 'API',
+    version: '1.0.0',
   },
   security: {
     BearerAuth: {
-      type: "http",
-      scheme: "bearer",
+      type: 'http',
+      scheme: 'bearer',
     },
   },
-  filesPattern: "./routes/index.js",
+  filesPattern: './routes/*.js',
   baseDir: __dirname,
   // URL where SwaggerUI will be rendered
-  swaggerUIPath: "/api-docs",
+  swaggerUIPath: '/api-docs',
   // Expose OpenAPI UI
   exposeSwaggerUI: true,
 };

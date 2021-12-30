@@ -1,4 +1,6 @@
-const { CLIENT, DB_MANE, USER, PASSWORD } = require("../config");
+const {
+  CLIENT, DB_MANE, USER, PASSWORD,
+} = require('../config');
 
 module.exports = {
   development: {
@@ -13,10 +15,10 @@ module.exports = {
       max: 10,
     },
     migrations: {
-      tableName: "knex_migrations",
+      tableName: 'knex_migrations',
     },
     seeds: {
-      directory: "./seeds",
+      directory: './seeds',
     },
   },
 };

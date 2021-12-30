@@ -1,5 +1,5 @@
-const ApiError = require("../middleware/error/api_error");
-const authService = require("../services/auth");
+const ApiError = require('../middleware/error/api_error');
+const authService = require('../services/auth');
 
 class AuthController {
   login(req, res, next) {
