@@ -4,19 +4,38 @@ const db = require("../db/db");
 class PersonDAO {
   getAll() {
     return db("person")
-      .select("id", "role", "first_name", "last_name", "email")
+      .select(
+        "id",
+        "role",
+        "first_name as firstName",
+        "last_name as lastName",
+        "email"
+      )
       .then((persons) => ({ count: persons.length, persons }));
   }
   getById(id) {
     return db
       .table("person")
-      .first("id", "role", "first_name", "last_name", "email")
+      .first(
+        "id",
+        "role",
+        "first_name as firstName",
+        "last_name as lastName",
+        "email"
+      )
       .where({ id });
   }
   getByEmail(email) {
     return db
       .table("person")
-      .first("id", "role", "first_name", "last_name", "email", "password")
+      .first(
+        "id",
+        "role",
+        "first_name as firstName",
+        "last_name as lastName",
+        "email",
+        "password"
+      )
       .where({ email });
   }
   async createPerson(firstName, lastName, email, password, role) {
@@ -60,7 +79,13 @@ class PersonDAO {
             password: hashedPassword || person.password,
             role: role || person.role,
           })
-          .returning(["id", "role", "first_name", "last_name", "email"]);
+          .returning([
+            "id",
+            "role",
+            "first_name as firstName",
+            "last_name as lastName",
+            "email",
+          ]);
       }
       return person;
     } catch (error) {

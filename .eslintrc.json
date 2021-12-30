@@ -1,13 +1,19 @@
 {
+  "overrides": [
+    {
+      "files": ["**/*.spec.js", "**/*.spec.jsx"]
+    }
+  ],
   "env": {
     "node": true,
     "browser": true,
     "commonjs": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true
   },
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 13
+    "ecmaVersion": "latest"
   },
   "rules": {}
 }
