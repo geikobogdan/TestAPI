@@ -62,7 +62,7 @@ class PersonDAO {
       };
     } catch (error) {
       const errors = [];
-      if (error.detail.includes('Key (email)')) {
+      if (error?.detail?.includes('Key (email)')) {
         errors.push({
           msg: 'This mail is already in use',
           param: 'email',
