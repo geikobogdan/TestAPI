@@ -1,10 +1,26 @@
 const db = require('../db/db');
 
 class MenuDAO {
+  getCount(conditions) {
+    if (conditions) {
+      // ...
+    }
+
+    return db('menu').count();
+  }
+
   getAll() {
+    let items = [];
     return db('menu')
       .select('id', 'name', 'ingredients')
-      .then((items) => ({ count: items.length, items }));
+      .then((responseItems) => {
+        items = responseItems;
+        return this.getCount();
+      })
+      .then((response) => {
+        const [{ count }] = response;
+        return { count, items };
+      });
   }
 
   getByName(name) {
